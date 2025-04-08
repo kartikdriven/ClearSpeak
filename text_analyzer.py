@@ -1,5 +1,3 @@
-# text_analyzer.py
-
 import spacy
 
 class TextAnalyzer:
@@ -8,14 +6,13 @@ class TextAnalyzer:
 
     def analyze_text(self, text):
         doc = self.nlp(text)
-        result = {
+        return {
             "num_sentences": len(list(doc.sents)),
             "num_tokens": len(doc),
             "num_nouns": len([token for token in doc if token.pos_ == "NOUN"]),
             "num_verbs": len([token for token in doc if token.pos_ == "VERB"]),
             "grammar_issues": self.find_grammar_issues(doc)
         }
-        return result
 
     def find_grammar_issues(self, doc):
         issues = []

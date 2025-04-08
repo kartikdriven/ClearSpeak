@@ -1,19 +1,18 @@
-# grammar_corrector.py
-
-from transformers import T5Tokenizer, T5ForConditionalGeneration
+from transformers import T5ForConditionalGeneration, T5Tokenizer
+import torch
 
 class GrammarCorrector:
     def __init__(self):
-        print("🔧 Loading grammar correction model...")
-        self.tokenizer = T5Tokenizer.from_pretrained("vennify/t5-base-grammar-correction")
-        self.model = T5ForConditionalGeneration.from_pretrained("vennify/t5-base-grammar-correction")
-        print("✅ Grammar correction model loaded.")
+        self.model_name = "vennify/t5-base-grammar-correction"
+        self.tokenizer = T5Tokenizer.from_pretrained(self.model_name)
+        self.model = T5ForConditionalGeneration.from_pretrained(self.model_name)
 
     def correct_grammar(self, text):
-        input_text = "correct: " + text
-        input_ids = self.tokenizer.encode(input_text, return_tensors="pt", max_length=512, truncation=True)
+        input_text = "grammar: " + text
+        input_ids = self.tokenizer.encode(input_text, return_tensors="pt", truncation=True)
 
-        outputs = self.model.generate(input_ids, max_length=512, num_beams=4, early_stopping=True)
+        with torch.no_grad():
+            outputs = self.model.generate(input_ids, max_length=128, num_beams=4, early_stopping=True)
 
-        corrected_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-        return corrected_text
+        corrected = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return corrected
